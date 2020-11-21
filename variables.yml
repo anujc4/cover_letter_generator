@@ -1,0 +1,18 @@
+---
+# OPTIONAL: Name of the person addressing the letter to
+# Default: "HR Manager"
+JOB_CONTACT_PERSON:
+
+# OPTIONAL: Source where job was posted eg. LinkedIn
+# Default: "the company's website"
+JOB_SOURCE:
+
+# OPTIONAL: Position applying to
+# Default: "developer"
+JOB_DEVELOPER: Data Engineer
+
+# MANDATORY: Name of the role applying to
+JOB_TITLE: Graduate level Data Engineer (8211)
+
+# MANDATORY: Name of the company applying to
+JOB_COMPANY: Allianz
