@@ -8,21 +8,6 @@ require 'yaml'
 
 vars = YAML.safe_load(File.read('variables.yml'))
 
-JOB_CONTACT_PERSON = vars['JOB_CONTACT_PERSON'] || ''
-JOB_TITLE = vars['JOB_TITLE'] || ''
-JOB_SOURCE = vars['JOB_SOURCE'] || ''
-JOB_COMPANY = vars['JOB_COMPANY'] || ''
-JOB_DEVELOPER = vars['JOB_DEVELOPER'] || ''
-
-DEFAULT_JOB_CONTACT_PERSON = 'HR Manager'
-PLACEHOLDER_JOB_CONTACT_PERSON = '{{JOB_CONTACT_PERSON}}'
-PLACEHOLDER_JOB_TITLE = '{{JOB_TITLE}}'
-DEFAULT_JOB_SOURCE = "the company's website"
-PLACEHOLDER_JOB_SOURCE = '{{JOB_SOURCE}}'
-PLACEHOLDER_JOB_COMPANY = '{{JOB_COMPANY}}'
-DEFAULT_JOB_DEVELOPER = 'developer'
-PLACEHOLDER_JOB_DEVELOPER = '{{JOB_DEVELOPER}}'
-
 begin
   document = Docx::Document.open('cover_letter_template.docx')
 rescue StandardError => e
@@ -30,52 +15,29 @@ rescue StandardError => e
   exit(1)
 end
 
-def validate_entry
-  raise 'Job Title not given' if JOB_TITLE.strip.empty?
-  raise 'Job Company not given' if JOB_COMPANY.strip.empty?
-  if JOB_CONTACT_PERSON.nil? || JOB_TITLE.nil? || JOB_SOURCE.nil? ||
-      JOB_COMPANY.nil? || JOB_DEVELOPER.nil?
-    raise 'Do not assign variables as nil'
-  end
-rescue SystemStackError => e
-  print "Error: #{e}"
-  exit(1)
-end
-
 print "\nRunning validations..."
-validate_entry
+raise 'Empty value found in hash. Please fill all values and try again' if vars.values.any?(&:empty?)
 
 print "\nRunning substitutions..."
 document.paragraphs.each do |p|
   p.each_text_run do |tr|
-    tr.substitute(PLACEHOLDER_JOB_CONTACT_PERSON,
-                  JOB_CONTACT_PERSON.empty? ? DEFAULT_JOB_CONTACT_PERSON : JOB_CONTACT_PERSON)
-
-    tr.substitute(PLACEHOLDER_JOB_TITLE, JOB_TITLE)
-
-    tr.substitute(PLACEHOLDER_JOB_SOURCE,
-                  JOB_SOURCE.empty? ? DEFAULT_JOB_SOURCE : JOB_SOURCE)
-
-    tr.substitute(PLACEHOLDER_JOB_COMPANY, JOB_COMPANY)
-
-    tr.substitute(PLACEHOLDER_JOB_DEVELOPER,
-                  JOB_DEVELOPER.empty? ? DEFAULT_JOB_DEVELOPER : JOB_DEVELOPER)
+    vars.each_key { |key| tr.substitute("{{#{key}}}", vars[key]) }
   end
 end
 
-begin
-  file_name = "ANUJ_CHANDRA_CL_#{JOB_COMPANY.split.first}.docx"
-  document.save(file_name)
-  print "\nDone. Opening file..."
+file_name = if vars['CANDIDATE_NAME'].nil? || vars['JOB_COMPANY'].nil?
+              "CL_#{rand(1000)}.docx"
+            else
+              "#{vars['CANDIDATE_NAME'].upcase.gsub(' ', '_')}_CL_#{vars['JOB_COMPANY'].split.first}.docx"
+            end
 
-  if OS.mac?
-    `open #{file_name} 2> /dev/null`
-  elsif OS.windows?
-    `#{file_name}`
-  elsif OS.linux?
-    `xdg-open #{file_name} 2> /dev/null`
-  end
-rescue StandardError => e
-  print "Unable to open file #{e}"
+document.save(file_name)
+print "\nDone. Opening file #{file_name} ..."
+
+if OS.mac?
+  `open #{file_name} 2> /dev/null`
+elsif OS.windows?
+  `#{file_name}`
+elsif OS.linux?
+  `xdg-open #{file_name} 2> /dev/null`
 end
-

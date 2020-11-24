@@ -1,18 +1,18 @@
 ---
-# OPTIONAL: Name of the person addressing the letter to
-# Default: "HR Manager"
-JOB_CONTACT_PERSON:
+# Your name
+CANDIDATE_NAME: Anuj Chandra
 
-# OPTIONAL: Source where job was posted eg. LinkedIn
-# Default: "the company's website"
-JOB_SOURCE:
+# Name of the company applying to
+JOB_COMPANY: CGG
 
-# OPTIONAL: Position applying to
-# Default: "developer"
-JOB_DEVELOPER: Data Engineer
+# Name of the person addressing the letter to
+JOB_CONTACT_PERSON: HR Manager
 
-# MANDATORY: Name of the role applying to
-JOB_TITLE: Graduate level Data Engineer (8211)
+# Source where job was posted eg. LinkedIn
+JOB_SOURCE: the company's website
 
-# MANDATORY: Name of the company applying to
-JOB_COMPANY: Allianz
+# Position applying to
+JOB_DEVELOPER: Machine Learning Engineer
+
+# Name of the role applying to
+JOB_TITLE: Machine Learning Engineer / Researcher
